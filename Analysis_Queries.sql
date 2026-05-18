@@ -34,3 +34,13 @@ JOIN customers c ON s.customer_id = c.customer_id
 GROUP BY c.customer_id,c.customer_name,c.email
 HAVING COUNT(s.sale_id) > 1
 ORDER BY order_count DESC;
+SELECT c.customer_name,c.email,COUNT(s.sale_id) AS total_orders,
+	GROUP_CONCAT(DISTINCT p.product_name SEPARATOR ',') AS purchase_products,
+    ROUND(SUM((p.price_usd * ( 1 - p.discount_percent / 100)) * s.quantity),2) AS total_lifetime_value
+FROM sales s
+INNER JOIN customers c ON s.customer_id = c.customer_id
+INNER JOIN products p ON s.product_id = p.product_id
+GROUP BY c.customer_id, c.customer_name,c.email
+HAVING total_lifetime_value > 15.00
+ORDER BY total_lifetime_value DESC;
+       
